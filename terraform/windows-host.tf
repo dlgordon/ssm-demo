@@ -1,14 +1,14 @@
-data "aws_ami" "linux" {
+data "aws_ami" "windows" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-2.0.*-x86_64-gp2"]
+    values = ["Windows_Server-2019-English-Full-Base-*"]
   }
   owners = ["amazon"]
 }
 
-resource "aws_security_group" "linux_security_group" {
-  name_prefix = "linux_hosts_"
+resource "aws_security_group" "windows_security_group" {
+  name_prefix = "windows_hosts_"
   vpc_id      = aws_vpc.core_vpc.id
   egress {
     from_port        = 0
@@ -19,8 +19,9 @@ resource "aws_security_group" "linux_security_group" {
   }
 }
 
-resource "aws_iam_role" "linux_host_role" {
-  name_prefix = "linux_host_role_"
+
+resource "aws_iam_role" "windows_host_role" {
+  name_prefix = "windows_host_role_"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -39,26 +40,26 @@ resource "aws_iam_role" "linux_host_role" {
   ]
 }
 
-resource "aws_iam_instance_profile" "linux_host_role_instance_profile" {
-  role = aws_iam_role.linux_host_role.name
+resource "aws_iam_instance_profile" "windows_host_role_instance_profile" {
+  role = aws_iam_role.windows_host_role.name
 }
 
-resource "aws_instance" "linux_instance" {
-  ami                  = data.aws_ami.linux.id
+resource "aws_instance" "windows_instance" {
+  ami                  = data.aws_ami.windows.id
   instance_type        = "t3.micro"
-  iam_instance_profile = aws_iam_instance_profile.linux_host_role_instance_profile.id
+  iam_instance_profile = aws_iam_instance_profile.windows_host_role_instance_profile.id
 
   associate_public_ip_address = true
-  vpc_security_group_ids      = [aws_security_group.linux_security_group.id, aws_security_group.paw_security_group.id]
-  subnet_id                   = aws_subnet.core_subnet_a.id
+  vpc_security_group_ids      = [aws_security_group.windows_security_group.id, aws_security_group.paw_security_group.id]
+  subnet_id                   = aws_subnet.core_subnet_b.id
   root_block_device {
     delete_on_termination = true
     encrypted             = true
-    volume_size           = 10
+    volume_size           = 50
     volume_type           = "gp2"
   }
 
   tags = {
-    Name = "linux-host"
+    Name = "windows-host"
   }
 }
