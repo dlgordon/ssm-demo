@@ -38,6 +38,22 @@ resource "aws_iam_role" "windows_host_role" {
   managed_policy_arns = [
     aws_iam_policy.ssm_policy.arn
   ]
+  inline_policy {
+    name = "allow_ssm"
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Action = [
+            "ssm:PutParameter*",
+          ]
+          Effect   = "Allow"
+          Resource = "arn:aws:ssm:ap-southeast-2:${data.aws_caller_identity.current.account_id}:parameter/windows/local/*"
+        },
+      ]
+    })
+  }
+
 }
 
 resource "aws_iam_instance_profile" "windows_host_role_instance_profile" {

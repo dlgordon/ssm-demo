@@ -57,21 +57,21 @@ resource "aws_launch_template" "paw_launch_template" {
   instance_type                        = "t3.micro"
   network_interfaces {
     associate_public_ip_address = true
-    
+
     security_groups = [aws_security_group.paw_security_group.id]
 
   }
 
-  
+
 
   user_data = filebase64("${path.module}/paw.userdata")
 }
 
 resource "aws_autoscaling_group" "paw_asg" {
-  name_prefix        = "paw_asg_"
-  desired_capacity   = 0
-  max_size           = 0
-  min_size           = 0
+  name_prefix      = "paw_asg_"
+  desired_capacity = 0
+  max_size         = 0
+  min_size         = 0
 
   launch_template {
     id      = aws_launch_template.paw_launch_template.id
@@ -79,6 +79,6 @@ resource "aws_autoscaling_group" "paw_asg" {
 
   }
 
-  vpc_zone_identifier = [aws_subnet.core_subnet_a.id,aws_subnet.core_subnet_b.id,]
+  vpc_zone_identifier = [aws_subnet.core_subnet_a.id, aws_subnet.core_subnet_b.id, ]
 
 }
