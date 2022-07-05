@@ -70,7 +70,7 @@ resource "aws_launch_template" "paw_launch_template" {
 resource "aws_autoscaling_group" "paw_asg" {
   name_prefix      = "paw_asg_"
   desired_capacity = 0
-  max_size         = 0
+  max_size         = 1
   min_size         = 0
 
   launch_template {
@@ -81,4 +81,15 @@ resource "aws_autoscaling_group" "paw_asg" {
 
   vpc_zone_identifier = [aws_subnet.core_subnet_a.id, aws_subnet.core_subnet_b.id, ]
 
+  tag {
+    key                 = "purpose"
+    value               = "paw"
+    propagate_at_launch = true
+  }
+
+  lifecycle {
+    ignore_changes = [
+      desired_capacity
+    ]
+  }
 }
