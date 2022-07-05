@@ -3,11 +3,6 @@ resource "aws_s3_bucket" "ssm_sessions" {
   force_destroy = true
 }
 
-resource "aws_s3_bucket_acl" "ssm_sessions_acl" {
-  bucket = aws_s3_bucket.ssm_sessions.id
-  acl    = "private"
-}
-
 resource "aws_s3_bucket_public_access_block" "ssm_sessions_access_block" {
   bucket = aws_s3_bucket.ssm_sessions.id
 
